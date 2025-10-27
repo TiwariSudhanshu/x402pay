@@ -97,7 +97,7 @@ export default function BlogPage() {
   if (article) {
     return (
       <div className="min-h-screen bg-zinc-50">
-        <div className="mx-auto max-w-4xl">
+        <div className="mx-auto max-w-7xl">
           <div className="sticky top-16 z-40 border-b border-zinc-200 bg-white/80 backdrop-blur-md px-4 sm:px-6 py-4">
             <button
               onClick={() => router.push('/')}
@@ -138,13 +138,58 @@ export default function BlogPage() {
             </div>
             
             <div className="prose prose-lg max-w-none">
-              {article.content.split('\n').map((paragraph, index) => (
-                <p key={index} className="mb-6 text-zinc-800 text-lg leading-relaxed">
-                  {paragraph}
-                </p>
-              ))}
+              {article.content.split('\n').map((paragraph, index) => {
+                // Check if line is a subheading (ends with : or is all caps/title case and short)
+                const isSubheading = paragraph.trim().endsWith(':') || 
+                  (paragraph.trim().length < 60 && paragraph.trim().length > 0 && 
+                   paragraph === paragraph.toUpperCase() || 
+                   /^[A-Z][A-Za-z\s]+$/.test(paragraph.trim()));
+                
+                if (!paragraph.trim()) {
+                  return <div key={index} className="h-4" />;
+                }
+                
+                if (isSubheading) {
+                  return (
+                    <h3 key={index} className="text-xl font-bold text-zinc-900 mt-8 mb-4">
+                      {paragraph}
+                    </h3>
+                  );
+                }
+                
+                return (
+                  <p key={index} className="mb-6 text-zinc-800 text-lg leading-relaxed">
+                    {paragraph}
+                  </p>
+                );
+              })}
             </div>
           </article>
+
+          {/* Footer */}
+          <footer className="mt-12 mb-8 px-4 sm:px-6">
+            <div className="max-w-4xl mx-auto py-8 border-t border-zinc-200">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-zinc-600">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-linear-to-br from-zinc-900 to-zinc-700 flex items-center justify-center text-white font-bold text-xs">
+                    x402
+                  </div>
+                  <span>Powered by x402 Protocol</span>
+                </div>
+                <div className="flex items-center gap-6">
+                  <a href="/" className="hover:text-zinc-900 transition-colors">
+                    Home
+                  </a>
+                  <a href="/create" className="hover:text-zinc-900 transition-colors">
+                    Create Article
+                  </a>
+                </div>
+              </div>
+              <p className="text-center text-xs text-zinc-500 mt-4">
+                © {new Date().getFullYear()} x402pay. Decentralized content monetization.
+              </p>
+            </div>
+          </footer>
         </div>
       </div>
     );

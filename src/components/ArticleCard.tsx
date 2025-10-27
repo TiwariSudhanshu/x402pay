@@ -137,9 +137,6 @@ export default function ArticleCard({ article }: { article: Article }) {
     }
   };
 
-  const handleReadMore = () => {
-    router.push(`/blog/${article.id}`);
-  };
 
   return (
     <div className="group flex h-full flex-col overflow-hidden rounded-xl bg-white border border-zinc-200 hover:border-zinc-300 shadow-sm hover:shadow-xl transition-all duration-300">

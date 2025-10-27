@@ -25,10 +25,10 @@ export default function Header() {
             className="flex items-center gap-3 group"
           >
             <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-linear-to-br from-zinc-900 to-zinc-700 group-hover:from-zinc-800 group-hover:to-zinc-600 transition-all">
-              <span className="text-white font-bold text-lg">x4</span>
+              <span className="text-white font-bold text-lg">x</span>
             </div>
             <div className="hidden sm:block">
-              <h1 className="text-xl font-bold text-zinc-900 tracking-tight">x402pay</h1>
+              <h1 className="text-xl font-bold text-zinc-900 text-left ">x402pay</h1>
               <p className="text-xs text-zinc-500">Web3 Content Marketplace</p>
             </div>
           </button>
