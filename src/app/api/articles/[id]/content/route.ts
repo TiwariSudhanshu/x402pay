@@ -4,13 +4,13 @@ import { connectDB, Article } from '@/lib/mongodb';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const articleId = params.id;
+    const { id: articleId } = await params;
 
     // Check if there's a valid payment cookie for this article
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const paymentCookie = cookieStore.get(`article_${articleId}_paid`);
 
     if (!paymentCookie || paymentCookie.value !== 'true') {
