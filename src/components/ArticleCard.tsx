@@ -11,9 +11,9 @@ interface Article {
   id: string;
   title: string;
   description: string;
-  full: string;
   image: string;
   priceEth: number;
+  creatorAddress?: string;
 }
 
 export default function ArticleCard({ article }: { article: Article }) {
@@ -25,6 +25,10 @@ export default function ArticleCard({ article }: { article: Article }) {
   const router = useRouter();
   const [isPurchased, setIsPurchased] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+
+  // Determine if this is an old blog or a database article
+  const isOldBlog = ['1', '2', '3'].includes(article.id);
+  const apiEndpoint = isOldBlog ? `/api/blog${article.id}` : `/api/articles/${article.id}/purchase`;
 
   const handleApproval = (data: any) => {
     const approvedBlogs = JSON.parse(localStorage.getItem("approvedBlogs") || "[]");
@@ -63,7 +67,8 @@ export default function ArticleCard({ article }: { article: Article }) {
           return;
         }
       }
-      const response = await fetch(`/api/blog${article.id}`, {
+      
+      const response = await fetch(apiEndpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -93,7 +98,7 @@ export default function ArticleCard({ article }: { article: Article }) {
         toast.success("Payment sent! Verifying...");
 
         // 🧩 Re-call API with payment proof
-        const verifyRes = await fetch(`/api/blog${article.id}`, {
+        const verifyRes = await fetch(apiEndpoint, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -159,8 +164,6 @@ export default function ArticleCard({ article }: { article: Article }) {
         </div>
 
         <div className="flex gap-3">
-         
-
           <form onSubmit={handleBuy} className="flex-1">
             <button
               type="submit"
