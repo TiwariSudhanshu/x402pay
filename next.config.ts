@@ -1,7 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // Ensure middleware is enabled
+  experimental: {
+    // Enable middleware
+  },
 };
 
 export default nextConfig;

@@ -1,57 +1,54 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
+import { useAccount, useDisconnect } from "wagmi";
+import { toast } from "sonner";
+import WalletModal from "./WalletModal";
 
 export default function Header() {
-  const [account, setAccount] = useState<string | null>(null);
+  const { address, isConnected } = useAccount();
+  const { disconnect } = useDisconnect({
+    onSuccess: () => { toast.info("Wallet disconnected"); }
+  });
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  useEffect(() => {
-    try {
-      const anyWindow = window as any;
-      if (anyWindow?.ethereum && anyWindow.ethereum.selectedAddress) {
-        setAccount(anyWindow.ethereum.selectedAddress);
-      }
-    } catch (e) {
-      // ignore
-    }
-  }, []);
-
-  const connectWallet = async () => {
-    const anyWindow = window as any;
-    if (!anyWindow?.ethereum) {
-      alert("No web3 provider found. Please install MetaMask or another wallet.");
-      return;
-    }
-
-    try {
-      const accounts = await anyWindow.ethereum.request({
-        method: "eth_requestAccounts",
-      });
-      if (accounts && accounts.length) setAccount(accounts[0]);
-    } catch (err) {
-      console.error(err);
-      alert("Could not connect wallet.");
-    }
-  };
-
-  const short = (addr: string) => `${addr.slice(0, 6)}...${addr.slice(-4)}`;
+  const short = (addr: string | undefined) => (addr ? `${addr.slice(0, 6)}...${addr.slice(-4)}` : "");
 
   return (
-    <header className="w-full border-b border-zinc-200 bg-white/80 backdrop-blur-sm dark:bg-black/60 dark:border-zinc-800">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-        <div className="flex items-center gap-3">
-          <div className="rounded-md bg-zinc-900 px-3 py-1 text-sm font-semibold text-white">x402pay</div>
-          <div className="text-sm text-zinc-600">articles · web3</div>
-        </div>
+    <>
+      <header className="w-full border-b border-zinc-100 bg-white shadow-sm">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-8 py-8">
+          <div className="flex items-center gap-5">
+            <div className="rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 px-5 py-3 text-2xl font-extrabold text-white">x402pay</div>
+            <div>
+              <div className="text-lg font-semibold text-zinc-900">Pay-per-article</div>
+              <div className="text-sm text-zinc-500">Simple web3 payments for content</div>
+            </div>
+          </div>
 
-        <div className="flex items-center gap-3">
-          <button
-            onClick={connectWallet}
-            className="rounded-md border border-zinc-200 px-4 py-2 text-sm font-medium hover:bg-zinc-50 dark:border-zinc-800"
-          >
-            {account ? `Connected: ${short(account)}` : "Connect Wallet"}
-          </button>
+          <div className="flex items-center gap-3">
+            {isConnected ? (
+              <div className="flex items-center gap-3">
+                <div className="text-sm text-zinc-700">{short(address)}</div>
+                <button
+                  onClick={() => disconnect()}
+                  className="rounded-md border border-zinc-200 px-4 py-2 text-sm hover:bg-zinc-50"
+                >
+                  Disconnect
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => setIsModalOpen(true)}
+                className="rounded-md bg-amber-500 px-5 py-3 text-sm font-semibold text-white hover:bg-amber-600"
+              >
+                Connect Wallet
+              </button>
+            )}
+          </div>
         </div>
-      </div>
-    </header>
+      </header>
+
+      <WalletModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+    </>
   );
 }

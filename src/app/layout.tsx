@@ -1,16 +1,13 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import Header from "../components/Header";
+import { Toaster } from "sonner";
+import WagmiProvider from "../components/WagmiProvider";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  variable: "--font-inter",
 });
 
 export const metadata: Metadata = {
@@ -26,10 +23,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${inter.variable} antialiased bg-white text-zinc-900`}
       >
-        <Header />
-        <main className="min-h-[calc(100vh-72px)]">{children}</main>
+        <WagmiProvider>
+          <Toaster position="top-right" richColors />
+          <Header />
+          <main className="min-h-[calc(100vh-96px)]">{children}</main>
+        </WagmiProvider>
       </body>
     </html>
   );

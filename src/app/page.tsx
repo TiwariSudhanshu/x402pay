@@ -11,7 +11,7 @@ const articles = [
       "Micropayments let creators monetize tiny interactions. This article walks through payment channels, gas optimizations, and UX considerations for frictionless ETH payments.",
     priceEth: 0.001,
     image:
-      "https://images.unsplash.com/photo-1526378720100-3be1f7d3f20a?q=80&w=800&auto=format&fit=crop&ixlib=rb-4.0.3&s=7fe3d24c8b6d9d68d7a1f47d2a3f8fbd",
+      "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?q=80&w=800&auto=format&fit=crop",
   },
   {
     id: "2",
@@ -37,16 +37,16 @@ const articles = [
 
 export default function Home() {
   return (
-    <div className="mx-auto max-w-6xl px-6 py-10">
-      <div className="mb-8 flex items-center justify-between">
+    <div className="mx-auto max-w-6xl px-6 py-12">
+      <div className="mb-10 flex flex-col items-start gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-50">x402pay</h1>
-          <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">Pay-per-article with simple wallet connect</p>
+          <h1 className="text-4xl font-bold text-zinc-900">x402pay</h1>
+          <p className="mt-2 text-base text-zinc-600">Pay-per-article with simple wallet connect</p>
         </div>
         <div className="text-sm text-zinc-500">Browse — connect wallet to buy</div>
       </div>
 
-      <div className="grid gap-6 sm:grid-cols-2">
+      <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
         {articles.map((a) => (
           <ArticleCard key={a.id} article={a} />
         ))}
