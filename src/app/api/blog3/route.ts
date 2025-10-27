@@ -44,15 +44,26 @@ export async function POST(request: NextRequest) {
     // Simulate a small delay for processing
     await new Promise(resolve => setTimeout(resolve, 500));
 
-    return NextResponse.json({
+    // Return approved message with cookie
+    const response = NextResponse.json({
       success: true,
       approved: true,
       message: 'Purchase approved! Access granted.',
       blogId: '3',
       articleTitle: 'Gas-efficient Content Delivery',
       purchasedAt: new Date().toISOString(),
-      transactionHash: '0x' + Math.random().toString(16).substring(2, 66),
+      transactionHash: paymentProof || '0x' + Math.random().toString(16).substring(2, 66),
     }, { status: 200 });
+
+    // Set a secure cookie to verify access
+    response.cookies.set('blog_3_paid', 'true', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 60 * 60 * 24 * 365, // 1 year
+    });
+
+    return response;
 
   } catch (error) {
     console.error('Blog 3 API error:', error);

@@ -1,6 +1,8 @@
 "use client";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useAccount } from "wagmi";
+import { toast } from "sonner";
 import UnderstandingOnchainMicropayments from "@/blogs/understanding-onchain-micropayments";
 import DesigningPayToReadExperiences from "@/blogs/designing-pay-to-read-experiences";
 import GasEfficientContentDelivery from "@/blogs/gas-efficient-content-delivery";
@@ -8,21 +10,48 @@ import GasEfficientContentDelivery from "@/blogs/gas-efficient-content-delivery"
 export default function BlogPage() {
   const params = useParams();
   const router = useRouter();
+  const { address } = useAccount();
   const blogId = params.id as string;
   const [isApproved, setIsApproved] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Check if this blog has been purchased
-    const approvedBlogs = JSON.parse(localStorage.getItem('approvedBlogs') || '[]');
-    
-    if (approvedBlogs.includes(blogId)) {
-      setIsApproved(true);
-    } else {
-      setIsApproved(false);
-    }
-    
-    setIsLoading(false);
+    const verifyAccess = async () => {
+      try {
+        // Verify with server using cookies
+        const response = await fetch('/api/verify-access', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            blogId: blogId,
+          }),
+          credentials: 'include', // Important: include cookies
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.approved) {
+            setIsApproved(true);
+            setIsLoading(false);
+            return;
+          }
+        }
+        
+        // If verification fails, not approved
+        setIsApproved(false);
+        setIsLoading(false);
+      } catch (err) {
+        console.error('Access verification error:', err);
+        setError('Failed to verify access');
+        setIsApproved(false);
+        setIsLoading(false);
+      }
+    };
+
+    verifyAccess();
   }, [blogId]);
 
   if (isLoading) {

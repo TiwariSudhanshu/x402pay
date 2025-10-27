@@ -43,7 +43,6 @@ export default function Home() {
           <h1 className="text-4xl font-bold text-zinc-900">x402pay</h1>
           <p className="mt-2 text-base text-zinc-600">Pay-per-article with simple wallet connect</p>
         </div>
-        <div className="text-sm text-zinc-500">Browse — connect wallet to buy</div>
       </div>
 
       <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">

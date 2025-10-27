@@ -159,12 +159,7 @@ export default function ArticleCard({ article }: { article: Article }) {
         </div>
 
         <div className="flex gap-3">
-          <button
-            onClick={handleReadMore}
-            className="flex-1 rounded-lg border border-zinc-300 px-4 py-2.5 text-sm font-medium transition-colors hover:bg-zinc-50"
-          >
-            Read full article
-          </button>
+         
 
           <form onSubmit={handleBuy} className="flex-1">
             <button
