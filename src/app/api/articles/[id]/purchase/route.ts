@@ -2,8 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { paymentMiddleware } from 'x402-next';
 import { connectDB, Article } from '@/lib/mongodb';
 
-const WALLET_ADDRESS = "0x08d2559adb38fa67F56512EF4De8022aaB1AEF4a";
-
 export async function POST(
   request: NextRequest,
   { params }: { params: { id: string } }
@@ -24,9 +22,12 @@ export async function POST(
       );
     }
 
-    // Configure paywall for this article
+    // Use the article creator's wallet address for payment
+    const creatorWalletAddress = article.creatorAddress;
+
+    // Configure paywall for this article - payment goes to creator
     const handler = paymentMiddleware(
-      WALLET_ADDRESS,
+      creatorWalletAddress,
       {
         [`/api/articles/${articleId}/purchase`]: {
           price: `$${article.priceEth}`,
@@ -60,7 +61,8 @@ export async function POST(
     console.log('Article purchase request:', { 
       articleId, 
       walletAddress, 
-      priceEth: article.priceEth, 
+      priceEth: article.priceEth,
+      creatorWallet: creatorWalletAddress,
       paymentProof 
     });
 

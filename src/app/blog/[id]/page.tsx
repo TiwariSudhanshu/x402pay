@@ -26,45 +26,19 @@ export default function BlogPage() {
   useEffect(() => {
     const verifyAccess = async () => {
       try {
-        // Check if this is an old blog (1, 2, 3) or a database article
-        const isOldBlog = ['1', '2', '3'].includes(blogId);
+        // Fetch article content from database
+        const response = await fetch(`/api/articles/${blogId}/content`, {
+          method: 'GET',
+          credentials: 'include',
+        });
 
-        if (isOldBlog) {
-          // Verify with old API for backward compatibility
-          const response = await fetch('/api/verify-access', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              blogId: blogId,
-            }),
-            credentials: 'include',
-          });
-
-          if (response.ok) {
-            const data = await response.json();
-            if (data.approved) {
-              setIsApproved(true);
-              setIsLoading(false);
-              return;
-            }
-          }
-        } else {
-          // New database articles - check cookie and fetch content
-          const response = await fetch(`/api/articles/${blogId}/content`, {
-            method: 'GET',
-            credentials: 'include',
-          });
-
-          if (response.ok) {
-            const data = await response.json();
-            if (data.approved && data.article) {
-              setArticle(data.article);
-              setIsApproved(true);
-              setIsLoading(false);
-              return;
-            }
+        if (response.ok) {
+          const data = await response.json();
+          if (data.approved && data.article) {
+            setArticle(data.article);
+            setIsApproved(true);
+            setIsLoading(false);
+            return;
           }
         }
         
@@ -95,20 +69,24 @@ export default function BlogPage() {
 
   if (!isApproved) {
     return (
-      <div className="flex min-h-screen items-center justify-center px-6">
+      <div className="min-h-screen bg-zinc-50 flex items-center justify-center px-4">
         <div className="max-w-md text-center">
-          <div className="mb-6 text-6xl">🔒</div>
-          <h1 className="mb-4 text-3xl font-bold text-gray-900">
+          <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-zinc-100 flex items-center justify-center">
+            <svg className="w-10 h-10 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+          </div>
+          <h1 className="text-3xl font-bold text-zinc-900 mb-4">
             Access Denied
           </h1>
-          <p className="mb-8 text-gray-600">
-            You need to purchase this article to read it. Please go back to the home page and click the "Buy Now" button.
+          <p className="text-zinc-600 mb-8">
+            Purchase this article to read the full content
           </p>
           <button
             onClick={() => router.push('/')}
-            className="rounded-md bg-amber-500 px-6 py-3 text-white font-semibold hover:bg-amber-600"
+            className="px-6 py-3 rounded-lg text-sm font-semibold text-white bg-zinc-900 hover:bg-zinc-800 transition-all shadow-lg"
           >
-            Go to Home Page
+            Go to Home
           </button>
         </div>
       </div>
@@ -118,43 +96,50 @@ export default function BlogPage() {
   // Render database article if available
   if (article) {
     return (
-      <div className="min-h-screen bg-white">
+      <div className="min-h-screen bg-zinc-50">
         <div className="mx-auto max-w-4xl">
-          <div className="border-b border-gray-200 bg-white px-6 py-4">
+          <div className="sticky top-16 z-40 border-b border-zinc-200 bg-white/80 backdrop-blur-md px-4 sm:px-6 py-4">
             <button
               onClick={() => router.push('/')}
-              className="flex items-center gap-2 text-gray-600 hover:text-gray-900"
+              className="flex items-center gap-2 text-zinc-600 hover:text-zinc-900 group"
             >
-              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="h-5 w-5 group-hover:-translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
               </svg>
-              Back to Home
+              Back
             </button>
           </div>
           
-          <article className="px-6 py-12">
-            <div className="mb-8">
+          <article className="bg-white px-4 sm:px-12 py-8 sm:py-16 mt-6 mx-4 sm:mx-6 rounded-xl shadow-sm">
+            <div className="mb-12">
               <img 
                 src={article.image} 
                 alt={article.title}
-                className="w-full h-96 object-cover rounded-xl mb-6"
+                className="w-full h-64 sm:h-96 object-cover rounded-xl mb-8 shadow-md"
               />
-              <h1 className="text-4xl font-bold text-gray-900 mb-4">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-zinc-900 mb-4 leading-tight">
                 {article.title}
               </h1>
-              <p className="text-xl text-gray-600 mb-4">
+              <p className="text-lg sm:text-xl text-zinc-600 mb-6 leading-relaxed">
                 {article.description}
               </p>
-              <div className="flex items-center gap-4 text-sm text-gray-500">
-                <span>By {article.creatorAddress.slice(0, 6)}...{article.creatorAddress.slice(-4)}</span>
+              <div className="flex flex-wrap items-center gap-3 text-sm text-zinc-500 pb-6 border-b border-zinc-200">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-full bg-zinc-100 flex items-center justify-center">
+                    <svg className="w-4 h-4 text-zinc-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                  </div>
+                  <span className="font-mono">{article.creatorAddress.slice(0, 6)}...{article.creatorAddress.slice(-4)}</span>
+                </div>
                 <span>•</span>
-                <span>{article.priceEth} ETH</span>
+                <span className="font-semibold">{article.priceEth} ETH</span>
               </div>
             </div>
             
             <div className="prose prose-lg max-w-none">
               {article.content.split('\n').map((paragraph, index) => (
-                <p key={index} className="mb-4 text-gray-800 leading-relaxed">
+                <p key={index} className="mb-6 text-zinc-800 text-lg leading-relaxed">
                   {paragraph}
                 </p>
               ))}
@@ -165,53 +150,27 @@ export default function BlogPage() {
     );
   }
 
-  // Render old blog components for backward compatibility
-  const renderOldBlog = () => {
-    const UnderstandingOnchainMicropayments = require('@/blogs/understanding-onchain-micropayments').default;
-    const DesigningPayToReadExperiences = require('@/blogs/designing-pay-to-read-experiences').default;
-    const GasEfficientContentDelivery = require('@/blogs/gas-efficient-content-delivery').default;
-
-    switch (blogId) {
-      case '1':
-        return <UnderstandingOnchainMicropayments />;
-      case '2':
-        return <DesigningPayToReadExperiences />;
-      case '3':
-        return <GasEfficientContentDelivery />;
-      default:
-        return (
-          <div className="flex min-h-screen items-center justify-center">
-            <div className="text-center">
-              <h1 className="mb-4 text-3xl font-bold text-gray-900">
-                Blog Not Found
-              </h1>
-              <button
-                onClick={() => router.push('/')}
-                className="rounded-md bg-amber-500 px-6 py-3 text-white font-semibold hover:bg-amber-600"
-              >
-                Go to Home Page
-              </button>
-            </div>
-          </div>
-        );
-    }
-  };
-
+  // Article not found
   return (
-    <div className="min-h-screen bg-white">
-      <div className="mx-auto max-w-6xl">
-        <div className="border-b border-gray-200 bg-white px-6 py-4">
-          <button
-            onClick={() => router.push('/')}
-            className="flex items-center gap-2 text-gray-600 hover:text-gray-900"
-          >
-            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-            Back to Home
-          </button>
+    <div className="min-h-screen bg-zinc-50 flex items-center justify-center px-4">
+      <div className="text-center">
+        <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-zinc-100 flex items-center justify-center">
+          <svg className="w-10 h-10 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
         </div>
-        {renderOldBlog()}
+        <h1 className="text-3xl font-bold text-zinc-900 mb-4">
+          Article Not Found
+        </h1>
+        <p className="text-zinc-600 mb-8 max-w-md mx-auto">
+          The article you're looking for doesn't exist or has been removed
+        </p>
+        <button
+          onClick={() => router.push('/')}
+          className="px-6 py-3 rounded-lg text-sm font-semibold text-white bg-zinc-900 hover:bg-zinc-800 transition-all shadow-lg"
+        >
+          Go to Home
+        </button>
       </div>
     </div>
   );

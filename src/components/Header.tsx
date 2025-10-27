@@ -17,44 +17,41 @@ export default function Header() {
 
   return (
     <>
-      <header className="w-full border-b border-zinc-100 bg-white shadow-sm">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-8 py-8">
-          <div className="flex items-center gap-5">
-            <button 
-              onClick={() => router.push("/")}
-              className="rounded-xl bg-linear-to-r from-amber-500 to-orange-500 px-5 py-3 text-2xl font-extrabold text-white hover:opacity-90 transition-opacity"
-            >
-              x402pay
-            </button>
-            <div>
-              <div className="text-lg font-semibold text-zinc-900">Pay-per-article</div>
-              <div className="text-sm text-zinc-500">Simple web3 payments for content</div>
+      <header className="sticky top-0 z-50 w-full border-b border-zinc-200 bg-white/80 backdrop-blur-md">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8 py-4">
+          {/* Logo Section */}
+          <button 
+            onClick={() => router.push("/")}
+            className="flex items-center gap-3 group"
+          >
+            <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-linear-to-br from-zinc-900 to-zinc-700 group-hover:from-zinc-800 group-hover:to-zinc-600 transition-all">
+              <span className="text-white font-bold text-lg">x4</span>
             </div>
-          </div>
+            <div className="hidden sm:block">
+              <h1 className="text-xl font-bold text-zinc-900 tracking-tight">x402pay</h1>
+              <p className="text-xs text-zinc-500">Web3 Content Marketplace</p>
+            </div>
+          </button>
 
+          {/* Wallet Connection */}
           <div className="flex items-center gap-3">
-            {/* {isConnected && (
-              <button
-                onClick={() => router.push("/create")}
-                className="rounded-md bg-green-500 px-4 py-2 text-sm font-semibold text-white hover:bg-green-600 transition-colors"
-              >
-                Create Article
-              </button>
-            )} */}
             {isConnected ? (
-              <div className="flex items-center gap-3">
-                <div className="text-sm text-zinc-700">{short(address)}</div>
+              <>
+                <div className="hidden md:flex items-center gap-2 px-4 py-2 rounded-lg bg-zinc-50 border border-zinc-200">
+                  <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                  <span className="text-sm font-medium text-zinc-700">{short(address)}</span>
+                </div>
                 <button
                   onClick={() => disconnect()}
-                  className="rounded-md border border-zinc-200 bg-orange-500 px-4 py-2 text-sm hover:bg-orange-600 "
+                  className="px-4 py-2 rounded-lg text-sm font-medium text-zinc-700 hover:bg-zinc-100 border border-zinc-200 transition-colors"
                 >
                   Disconnect
                 </button>
-              </div>
+              </>
             ) : (
               <button
                 onClick={() => setIsModalOpen(true)}
-                className="rounded-md bg-amber-500 px-5 py-3 text-sm font-semibold text-white hover:bg-amber-600"
+                className="px-6 py-2.5 rounded-lg text-sm font-semibold text-white bg-zinc-900 hover:bg-zinc-800 transition-all shadow-sm hover:shadow-md"
               >
                 Connect Wallet
               </button>

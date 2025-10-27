@@ -26,9 +26,8 @@ export default function ArticleCard({ article }: { article: Article }) {
   const [isPurchased, setIsPurchased] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // Determine if this is an old blog or a database article
-  const isOldBlog = ['1', '2', '3'].includes(article.id);
-  const apiEndpoint = isOldBlog ? `/api/blog${article.id}` : `/api/articles/${article.id}/purchase`;
+  // Use dynamic article purchase endpoint
+  const apiEndpoint = `/api/articles/${article.id}/purchase`;
 
   const handleApproval = (data: any) => {
     const approvedBlogs = JSON.parse(localStorage.getItem("approvedBlogs") || "[]");
@@ -143,47 +142,46 @@ export default function ArticleCard({ article }: { article: Article }) {
   };
 
   return (
-    <div className="card group flex h-full flex-col overflow-hidden rounded-2xl border-2 border-black bg-white shadow-sm transition-all duration-300 hover:-translate-y-2 hover:shadow-xl">
-      <div className="relative h-48 w-full overflow-hidden">
+    <div className="group flex h-full flex-col overflow-hidden rounded-xl bg-white border border-zinc-200 hover:border-zinc-300 shadow-sm hover:shadow-xl transition-all duration-300">
+      <div className="relative h-48 sm:h-56 w-full overflow-hidden bg-zinc-100">
         <img
           src={article.image}
           alt={article.title}
-          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
         />
+        <div className="absolute top-3 right-3 px-3 py-1.5 rounded-full bg-white/90 backdrop-blur-sm border border-zinc-200">
+          <span className="text-sm font-bold text-zinc-900">{article.priceEth} ETH</span>
+        </div>
       </div>
 
-      <div className="flex flex-1 flex-col p-6">
-        <h3 className="mb-2 text-xl font-bold text-zinc-900">{article.title}</h3>
+      <div className="flex flex-1 flex-col p-5 sm:p-6">
+        <h3 className="mb-3 text-lg sm:text-xl font-bold text-zinc-900 line-clamp-2 group-hover:text-zinc-700 transition-colors">
+          {article.title}
+        </h3>
 
-        <p className="mb-4 flex-1 text-sm leading-relaxed text-zinc-600">
+        <p className="mb-4 flex-1 text-sm leading-relaxed text-zinc-600 line-clamp-3">
           {article.description}
         </p>
 
-        <div className="mb-3 text-lg font-bold text-amber-600">
-          {article.priceEth} ETH
-        </div>
-
-        <div className="flex gap-3">
-          <form onSubmit={handleBuy} className="flex-1">
-            <button
-              type="submit"
-              disabled={isProcessing || isPurchased}
-              className={`w-full whitespace-nowrap rounded-lg px-6 py-2.5 text-sm font-semibold text-white transition-colors ${
-                isPurchased
-                  ? "bg-green-500 cursor-not-allowed"
-                  : isProcessing
-                  ? "bg-gray-400 cursor-wait"
-                  : "bg-amber-500 hover:bg-amber-600"
-              }`}
-            >
-              {isPurchased
-                ? "Purchased ✓"
+        <form onSubmit={handleBuy} className="w-full">
+          <button
+            type="submit"
+            disabled={isProcessing || isPurchased}
+            className={`w-full rounded-lg px-6 py-3 text-sm font-semibold transition-all ${
+              isPurchased
+                ? "bg-zinc-100 text-zinc-600 cursor-not-allowed border border-zinc-200"
                 : isProcessing
-                ? "Processing..."
-                : "Buy Now"}
-            </button>
-          </form>
-        </div>
+                ? "bg-zinc-200 text-zinc-500 cursor-not-allowed"
+                : "bg-zinc-900 text-white hover:bg-zinc-800 shadow-md hover:shadow-lg"
+            }`}
+          >
+            {isPurchased
+              ? "✓ Purchased"
+              : isProcessing
+              ? "Purchasing..."
+              : "Purchase & Read"}
+          </button>
+        </form>
       </div>
     </div>
   );
