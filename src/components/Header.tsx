@@ -18,7 +18,7 @@ export default function Header() {
       <header className="w-full border-b border-zinc-100 bg-white shadow-sm">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-8 py-8">
           <div className="flex items-center gap-5">
-            <div className="rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 px-5 py-3 text-2xl font-extrabold text-white">x402pay</div>
+            <div className="rounded-xl bg-linear-to-r from-amber-500 to-orange-500 px-5 py-3 text-2xl font-extrabold text-white">x402pay</div>
             <div>
               <div className="text-lg font-semibold text-zinc-900">Pay-per-article</div>
               <div className="text-sm text-zinc-500">Simple web3 payments for content</div>

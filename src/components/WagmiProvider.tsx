@@ -1,14 +1,15 @@
 "use client";
 import React from "react";
 import { WagmiConfig, createConfig, configureChains } from "wagmi";
-import { mainnet, polygon, arbitrum, optimism } from "wagmi/chains";
+import { baseSepolia } from "wagmi/chains";
 import { publicProvider } from "wagmi/providers/public";
 import { MetaMaskConnector } from "wagmi/connectors/metaMask";
 import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
 import { CoinbaseWalletConnector } from "wagmi/connectors/coinbaseWallet";
 
+// ✅ Only use Base Sepolia
 const { chains, publicClient } = configureChains(
-  [mainnet, polygon, arbitrum, optimism], 
+  [baseSepolia],
   [publicProvider()]
 );
 
@@ -32,6 +33,10 @@ const wagmiConfig = createConfig({
   publicClient,
 });
 
-export default function WagmiProvider({ children }: { children: React.ReactNode }) {
+export default function WagmiProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return <WagmiConfig config={wagmiConfig}>{children}</WagmiConfig>;
 }
