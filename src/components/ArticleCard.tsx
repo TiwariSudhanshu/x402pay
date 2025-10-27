@@ -2,9 +2,10 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useAccount, useSendTransaction } from "wagmi";
+import { useAccount, useSendTransaction, useNetwork, useSwitchNetwork } from "wagmi";
 import { parseEther } from "viem";
 import { toast } from "sonner";
+import { baseSepolia } from "wagmi/chains";
 
 interface Article {
   id: string;
@@ -18,6 +19,8 @@ interface Article {
 export default function ArticleCard({ article }: { article: Article }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const { address, isConnected } = useAccount();
+  const { chain } = useNetwork();
+  const { switchNetworkAsync } = useSwitchNetwork();
   const { sendTransactionAsync } = useSendTransaction();
   const router = useRouter();
   const [isPurchased, setIsPurchased] = useState(false);
@@ -45,8 +48,21 @@ export default function ArticleCard({ article }: { article: Article }) {
 
     setIsProcessing(true);
     
-
     try {
+      // Check if we're on Base Sepolia network
+      if (chain?.id !== baseSepolia.id) {
+        toast.info("Switching to Base Sepolia network...");
+        
+        try {
+          await switchNetworkAsync?.(baseSepolia.id);
+          toast.success("Switched to Base Sepolia!");
+        } catch (switchError) {
+          console.error("Network switch error:", switchError);
+          toast.error("Failed to switch network. Please switch to Base Sepolia manually.");
+          setIsProcessing(false);
+          return;
+        }
+      }
       const response = await fetch(`/api/blog${article.id}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

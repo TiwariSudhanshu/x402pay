@@ -25,12 +25,21 @@ const handler = paymentMiddleware(
 
 export async function POST(request: NextRequest) {
   try {
+    // Check if payment proof is provided
+    const paymentProof = request.headers.get('X-PAYMENT');
+    
+    // If no payment proof, check paywall
+    if (!paymentProof) {
+      const paywallResponse = await handler(request);
+      if (paywallResponse) return paywallResponse;
+    }
+    
+    // If we reach here, either payment proof was provided or paywall passed
     const body = await request.json();
     const { walletAddress, priceEth } = body;
-const paywallResponse = await handler(request);
-  if (paywallResponse) return paywallResponse;
+    
     // Simulate payment verification
-    console.log('Blog 3 purchase request:', { walletAddress, priceEth });
+    console.log('Blog 3 purchase request:', { walletAddress, priceEth, paymentProof });
 
     // Simulate a small delay for processing
     await new Promise(resolve => setTimeout(resolve, 500));
